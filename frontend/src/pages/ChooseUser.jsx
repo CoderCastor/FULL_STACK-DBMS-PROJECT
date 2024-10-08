@@ -64,7 +64,7 @@ function ChooseUser() {
     });
   
     return (
-      <div className="bg-blue-900 h-screen w-screen flex justify-center items-center ">
+      <div className="bg-blue-950 h-screen w-screen flex justify-center items-center ">
         <div className="mainFlex lg:w-auto flex flex-col lg:flex-row justify-center items-center overflow-hidden rounded-3xl w-[90vw]">
           <div className="imgFlex lg:h-[500px] lg:w-[550px] w-[90%] h-[200px] z-10 bg-white flex justify-center items-center">
             <img src={img} className="imglogin h-[250px] translate-y-8 lg:h-[100%] lg:w-[100%] lg:translate-y-0" alt="" srcset="" />
