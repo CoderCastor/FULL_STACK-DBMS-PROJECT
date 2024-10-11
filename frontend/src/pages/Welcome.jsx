@@ -52,7 +52,6 @@ function Welcome() {
 
     gsap.from(".welcomeimg", {
       duration: 1,
-      delay: 1,
       y: 5,
       delay:2.0,
       yoyo: true,
