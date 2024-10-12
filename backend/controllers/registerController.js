@@ -1,4 +1,3 @@
-const { get } = require("../routes/registerRoutes");
 const { getConnection } = require("../utils/db");
 const { hashPassword } = require('../services/authService')
 
