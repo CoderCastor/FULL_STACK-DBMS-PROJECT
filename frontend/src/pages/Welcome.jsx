@@ -90,14 +90,14 @@ function Welcome() {
           <h1 className="font-black text-4xl px-4 lg:self-end lg:text-[80px] flex flex-wrap gap-1 items-center lg:w-[40%] lg:absolute lg:top-16 lg:right-36 lg:items-center lg:justify-start lg:gap-10 lg:flex-col">
             <span className="mainTitle">Student</span>
             <span className="mainTitle"><span className="">Performance</span></span>
-            <span className="mainTitle flex">Analysis System</span>
+            <span className="mainTitle flex lg:w-[600px]">Analysis System</span>
           </h1>
           <div className="lg:flex lg:w-[90%] lg:h-[70%] lg:gap-10 lg:items-center lg:px-4">
             <img
               className="welcomeimg h-[25vh] w-[90vw] scale-110 lg:w-[50%] lg:h-[90%] lg:scale-125"
               src={imgg}
             />
-            <p className="px-3 text-sm text-center lg:w-[50%] lg:text-3xl lg:self-end">
+            <p className="px-3 text-sm text-center lg:w-[50%] lg:text-xl lg:self-end">
               Streamline college management, class organization, and add
               students and faculty. Seamlessly track attendance, assess
               performance, and provide feedback. Access records, view marks, and
