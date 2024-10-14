@@ -1,9 +1,11 @@
 const express = require('express');
-const {findUserByUsernameAndEmail} = require('../controllers/loginController');
+const {findUserByUsername,checkPassword} = require('../controllers/loginController');
 
 const router = express.Router();
 
-router.post('/',findUserByUsernameAndEmail)
+router.post('/',findUserByUsername)
+
+router.post('/check-password',checkPassword)
 
 
 module.exports = router;

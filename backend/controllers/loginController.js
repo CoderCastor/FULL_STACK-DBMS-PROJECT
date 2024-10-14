@@ -1,63 +1,42 @@
 const { getConnection } = require("../utils/db");
-const { comparePassword } = require('../services/authService');
+const { comparePassword } = require("../services/authService");
 
-const findUserByUsernameAndEmail = (req, res) => {
+const findUserByUsername = (req, res) => {
   const connection = getConnection();
   const { username, password } = req.body;
 
-  const query1 = `SELECT * FROM admin WHERE username = ?`;
-  const query2 = `SELECT * FROM admin WHERE email = ?`;
+  const query = `SELECT password FROM admin WHERE username = ? OR email = ?`;
 
-  const usernameQuery = new Promise((resolve, reject) => {
-    connection.query(query1, [username], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.length > 0 ? result[0] : null);
-    });
+  connection.query(query, [username,username], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (result.length > 0) {
+      return res.json({ userExists: true });
+    } else {
+      return res.json({ userExists: false });
+    }
   });
-
-  const emailQuery = new Promise((resolve, reject) => {
-    connection.query(query2, [username], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.length > 0 ? result[0] : null);
-    });
-  });
-
-  Promise.all([usernameQuery, emailQuery])
-    .then(async ([userByUsername, userByEmail]) => {
-      let hashedPassword;
-
-      if (userByUsername) {
-        hashedPassword = userByUsername.password;
-      } else if (userByEmail) {
-        hashedPassword = userByEmail.password;
-      }
-
-      if (hashedPassword) {
-        // If either user is found, check the password
-        try {
-          const isCorrect = await comparePassword(password, hashedPassword);
-          if (isCorrect) {
-            return res.json({ message: "Login successful" });
-          } else {
-            return res.status(401).json({ error: "Invalid password" });
-          }
-        } catch (error) {
-          return res.status(500).json({ error: "Error comparing password" });
-        }
-      } else {
-        // No user found with the given username or email
-        return res.status(404).json({
-          userFoundByUsername: !!userByUsername,
-          userFoundByEmail: !!userByEmail,
-          message: "User not found",
-        });
-      }
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Database error" });
-    });
 };
 
-module.exports = {
-  findUserByUsernameAndEmail,
-};
+const checkPassword = async (req, res) => {
+    const connection = getConnection();
+    const { username, password } = req.body;
+  
+    const query = `SELECT password FROM admin WHERE username = ? OR email = ?`;
+  
+    connection.query(query, [username,username], async (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+      
+      let reqPassword = req.body.password
+      let dbHashedPassword = result[0].password;
+      let isCorrect = await comparePassword(reqPassword,dbHashedPassword)
+      res.json({
+        isCorrect:isCorrect   
+      })
+    });
+  };
+
+module.exports = { findUserByUsername,checkPassword };

@@ -13,13 +13,8 @@ const hashPassword = async(password) =>{
 
 
 //function to compare a password with a hashed password
-const comparePassword = async(password,hashedPassword) => {
-    try{
-        const isCorrect = await bcrypt.compare(password, hashedPassword)
-        return isCorrect;
-    }catch(error){
-        console.error('Error Hashing Password:',error)
-    }
+const comparePassword = (password,hashedPassword) => {
+   return bcrypt.compare(password, hashedPassword)
 }
 
 module.exports = {

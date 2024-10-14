@@ -4,6 +4,7 @@ import axios from "axios";
 // import { useGSAP } from "@gsap/react";
 import { UserContext } from "../../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 function Login() {
   //Context
@@ -13,6 +14,7 @@ function Login() {
   const [userNotFound, setUserNotFound] = useState(false);
   const [wrongPassword, setWrongPassword] = useState(false);
   const [validInputField, setValidInputField] = useState(false);
+  const [loading,setLoading] = useState(false)
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -21,7 +23,8 @@ function Login() {
   //valid fields handler
   useEffect(() => {
     setValidInputField(false);
-    setUserNotFound(false)
+    setUserNotFound(false);
+    setWrongPassword(false)
   }, [formData.username, formData.password]);
 
   const changeHandler = (e) => {
@@ -30,7 +33,6 @@ function Login() {
       ...prev,
       [name]: value,
     }));
-    console.log(formData);
   };
 
   const validInputFields = (e) => {
@@ -45,19 +47,37 @@ function Login() {
   };
 
   const submitHandler = async () => {
-    try {
-      console.log(formData);
 
+    try {
       const response = await axios.post(
         "http://localhost:8000/login",
         formData
       );
-      if (response.data.userFoundByEmail || response.data.userFoundByUsername) {
-        console.log(response.data);
-        
+      if(!response.data.userExists){
+        setUserNotFound(true)
       }else{
-        setUserNotFound(true);
+        try{
+          const response = await axios.post(
+            "http://localhost:8000/login/check-password",
+            formData
+          );
+          if(!response.data.isCorrect){
+            setWrongPassword(true);
+          }
+          if(response.data.isCorrect){
+            setLoading(true);
+            setTimeout(()=>{
+             
+              navigate('/admin/dashboard')
+              
+            },2000)
+          }
+          
+        }catch(err){
+          console.log(err);
+        }
       }
+      
     } catch (err) {
       console.log(err);
     }
@@ -78,6 +98,9 @@ function Login() {
       <h1 className="absolute top-[150px] px-2 py-2 bg-white rounded-2xl font-semibold">
         Hello <span className="text-red-500">{UserState.user}</span>
       </h1>
+      <div className={`w-full h-full absolute ${loading ? "":"hidden"}`} >
+      <Loading data={{msg: `Admin Authorized Successfully`}} />
+      </div>
       <form
         action=""
         className="bg-white rounded-lg w-[90%] lg:w-[600px] flex flex-col items-center gap-10 p-10 relative pb-14"
