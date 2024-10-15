@@ -1,12 +1,19 @@
-import React from 'react'
-import RandomString from '../../components/RandomString'
+import React, { useState } from "react";
+import RandomString from "../../components/RandomString";
 
 function Students() {
+  const [token, setToken] = useState("");
+  const TokenFetcher = (token) => {
+    setToken(token)
+    console.log(token);
+    
+  };
+
   return (
     <div>
-      <RandomString/>
+      <RandomString TokenFetcher={TokenFetcher} />
     </div>
-  )
+  );
 }
 
-export default Students
+export default Students;
