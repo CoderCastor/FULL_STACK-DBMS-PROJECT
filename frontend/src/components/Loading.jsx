@@ -10,10 +10,12 @@ function Loading(data) {
     gsap.from('.msg',{
         y:100,
         duration:1,
-        delay:.5
+        delay:.8
         
     })
   })
+
+
 
   return (
     <div className="bg-[#3f3f3f94] h-full w-full absolute z-10 flex flex-col justify-center items-center">

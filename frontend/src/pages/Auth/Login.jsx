@@ -68,7 +68,7 @@ function Login() {
             setLoading(true);
             setTimeout(()=>{
              
-              navigate('/admin/dashboard')
+              navigate('/admin/dashboard/home')
               
             },2000)
           }
