@@ -3,9 +3,9 @@ const { comparePassword } = require("../services/authService");
 
 const findUserByUsername = (req, res) => {
   const connection = getConnection();
-  const { username, password } = req.body;
+  const { username, password,role } = req.body;
 
-  const query = `SELECT password FROM admin WHERE username = ? OR email = ?`;
+  const query = `SELECT password FROM ${role} WHERE username = ? OR email = ?`;
 
   connection.query(query, [username,username], (err, result) => {
     if (err) {
@@ -21,9 +21,9 @@ const findUserByUsername = (req, res) => {
 
 const checkPassword = async (req, res) => {
     const connection = getConnection();
-    const { username, password } = req.body;
+    const { username, password,role } = req.body;
   
-    const query = `SELECT password FROM admin WHERE username = ? OR email = ?`;
+    const query = `SELECT password FROM ${role} WHERE username = ? OR email = ?`;
   
     connection.query(query, [username,username], async (err, result) => {
       if (err) {
@@ -38,5 +38,6 @@ const checkPassword = async (req, res) => {
       })
     });
   };
+
 
 module.exports = { findUserByUsername,checkPassword };

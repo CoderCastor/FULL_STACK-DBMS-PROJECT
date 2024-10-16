@@ -18,6 +18,7 @@ function Login() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    role: `${UserState.user}`,
   });
 
   //valid fields handler

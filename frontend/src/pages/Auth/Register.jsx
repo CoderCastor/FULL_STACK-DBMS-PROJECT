@@ -33,6 +33,7 @@ function Register() {
   const [emailExists, setEmailExists] = useState(false);
   const [allInputs, setAllInputs] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
+  const [tokenValid, setTokenValid] = useState(true);
 
   const changeHandler = (e) => {
     const { name, value } = e.target;
@@ -40,6 +41,7 @@ function Register() {
       ...prev,
       [name]: value,
     }));
+    setTokenValid(true)
   };
 
   //check if username exists
@@ -86,12 +88,30 @@ function Register() {
       emailValidation() &&
       formData.password !== "" &&
       formData.college_name !== "" &&
-      formData.college_id !== ""
+      formData.college_id !== "" &&
+      formData.token !== ""
     ) {
       setAllInputs(true);
       if (!emailExists && !usernameExists) {
         //after successfull validation sending request
-        submitHandler();
+        switch (UserState.user) {
+          case "admin":
+            submitHandler();
+            break;
+
+          case "teacher":
+            if (formData.token) {
+              axios
+                .get(`http://localhost:8000/register/check-token`, {
+                  params: { token: formData.token, role: formData.role },
+                })
+                .then((res) => {
+                  setTokenValid(res.data.exists);
+                })
+                .catch((err) => console.error(err));
+            }
+            break;
+        }
       }
     } else {
       setAllInputs(false);
@@ -99,7 +119,6 @@ function Register() {
   };
 
   const submitHandler = async () => {
-
     try {
       console.log(formData);
       const response = await axios.post(
@@ -108,18 +127,18 @@ function Register() {
       );
       console.log(response.data);
       setShowLoading(true);
-      loginNavigator()
+      loginNavigator();
     } catch (err) {
       console.log(err);
     }
   };
 
   //loginNavigator
-  const loginNavigator = () =>{
+  const loginNavigator = () => {
     setTimeout(() => {
-      navigate('/login')
-    },2000)
-  } 
+      navigate("/login");
+    }, 2000);
+  };
 
   //context usecase
   useEffect(() => {
@@ -134,8 +153,8 @@ function Register() {
 
   return (
     <div className="bg-blue-950 h-screen w-screen flex justify-center items-center relative">
-      <div className={`w-full h-full absolute ${showLoading ? "":"hidden"}`} >
-      <Loading data={{msg: `Admin Created Successfully`}} />
+      <div className={`w-full h-full absolute ${showLoading ? "" : "hidden"}`}>
+        <Loading data={{ msg: `Admin Created Successfully` }} />
       </div>
       <form
         action=""
@@ -234,14 +253,21 @@ function Register() {
 
             case "teacher":
               return (
-                <input
-                  className="px-2 py-2 rounded-md w-[96%] lg:w-4/5 bg-transparent border-blue-500 border-b-2 placeholder:text-black focus:outline-none caret-blue-500"
-                  type="text"
-                  name="admin_token"
-                  placeholder="Admin Token"
-                  onChange={changeHandler}
-                  required
-                />
+                <div className="w-[96%] lg:w-4/5 relative">
+                  <input
+                    className={`px-2 py-2 rounded-md w-[100%] bg-transparent ${tokenValid ? "border-blue-500" : "border-red-500"} border-b-2 placeholder:text-black focus:outline-none caret-blue-500`}
+                    type="text"
+                    name="token"
+                    placeholder="Admin Token"
+                    onChange={changeHandler}
+                    required
+                  />
+                  <span
+                    className={`text-sm font-black text-red-500 absolute left-2 -bottom-6 ${tokenValid && "hidden"}`}
+                  >
+                    Invalid Token !
+                  </span>
+                </div>
               );
 
             case "student":
