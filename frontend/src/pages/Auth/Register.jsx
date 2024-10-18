@@ -107,6 +107,9 @@ function Register() {
                 })
                 .then((res) => {
                   setTokenValid(res.data.exists);
+                  if(res.data.exists){
+                    submitHandler();                   
+                  }
                 })
                 .catch((err) => console.error(err));
             }
@@ -119,17 +122,37 @@ function Register() {
   };
 
   const submitHandler = async () => {
-    try {
-      console.log(formData);
-      const response = await axios.post(
-        "http://localhost:8000/register/new-admin",
-        formData
-      );
-      console.log(response.data);
-      setShowLoading(true);
-      loginNavigator();
-    } catch (err) {
-      console.log(err);
+    switch(UserState.user){
+      case 'admin':
+        try {
+          console.log(formData);
+          const response = await axios.post(
+            "http://localhost:8000/register/new-admin",
+            formData
+          );
+          console.log(response.data);
+          setShowLoading(true);
+          loginNavigator();
+        } catch (err) {
+          console.log(err);
+        }
+        break
+
+      case 'teacher':
+        try {
+          console.log(formData);
+          const response = await axios.post(
+            "http://localhost:8000/register/new-teacher",
+            formData
+          );
+          console.log(response.data);
+          setShowLoading(true);
+          loginNavigator();
+        } catch (err) {
+          console.log(err);
+        }
+        break
+        
     }
   };
 
