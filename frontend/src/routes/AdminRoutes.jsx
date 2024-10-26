@@ -7,13 +7,14 @@ import Students from "../pages/Admin/Students";
 import Teachers from "../pages/Admin/Teachers";
 import Notices from "../pages/Admin/Notices";
 import Subjects from "../pages/Admin/Subjects";
+import SideBar from "../components/SideBar";
 
 
 function AdminRoutes() {
   return (
     <>
       <Navbar/>
-
+      <SideBar/>
       <Routes>
         <Route path="home" element={<Home/>} />
         <Route path="classes" element={<Classes/>} />

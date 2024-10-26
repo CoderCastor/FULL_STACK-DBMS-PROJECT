@@ -1,11 +1,16 @@
 import React from "react";
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import { IoMdClose } from "react-icons/io";
 
-function RandomString({TokenFetcher}) {
+function RandomString({ TokenFetcher,title,setTokenPopup }) {
   const [length, setLength] = useState(8);
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("");
+  
+  const location = useLocation()
+  const path = location.pathname
 
   // password referenceHook
   const passwordRef = useRef(null);
@@ -41,10 +46,12 @@ function RandomString({TokenFetcher}) {
     passwordgenerator();
   }, [length, numberAllowed, charAllowed, passwordgenerator]);
   return (
-    <div className="h-screen w-screen">
+    <div className="h-auto w-screen">
       <div className="lg:w-full w-[90%] max-w-md mx-auto shadow-2xl rounded-lg px-4 py-10 my-8 flex flex-col gap-4 text-black bg-zinc-100">
-        <h1 className="text-green font-black text-2xl text-center my-3">
-          Token Generator
+        <h1 className="text-green font-black text-2xl text-center my-3 flex justify-between px-5">
+          <span><span>| </span>
+          {title}</span>
+          <div onClick={()=>setTokenPopup(false)} className="close flex justify-center items-center bg-black rounded-full h-9 w-9"><IoMdClose className='text-2xl text-white' /></div>
         </h1>
         <div className="flex shadow rounded-lg overflow-hidden mb-4 ">
           <input
@@ -107,8 +114,9 @@ function RandomString({TokenFetcher}) {
             </div>
           </div>
         </div>
-        <button className="px-2 py-1 shadow-xl font-semibold text-blue-900 border-blue-600 border-2 text-xl w-1/2 mx-auto mt-2 rounded-xl" 
-        onClick={()=>TokenFetcher(password)}
+        <button
+          className="px-2 py-1 shadow-xl font-semibold text-blue-900 border-blue-600 border-2 text-xl w-1/2 mx-auto mt-2 rounded-xl"
+          onClick={() => TokenFetcher(password)}
         >
           Insert
         </button>
