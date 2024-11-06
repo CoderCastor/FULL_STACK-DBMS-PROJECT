@@ -68,7 +68,8 @@ function Login() {
           if(response.data.isCorrect){
             setLoading(true);
             setTimeout(()=>{
-             
+              console.log(response.data);
+              
               navigate('/admin/dashboard/home')
               
             },2000)

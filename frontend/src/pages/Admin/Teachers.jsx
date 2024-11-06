@@ -1,42 +1,119 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TbLetterSpacing } from "react-icons/tb";
 import { RiAiGenerate } from "react-icons/ri";
 import { FaKey } from "react-icons/fa6";
 import RandomString from "../../components/RandomString";
 import { IoMdClose } from "react-icons/io";
 import Table from "../../components/Table";
+import axios from "axios";
+import TableToken from "../../components/TableToken";
+import { PiArrowFatLinesRightFill } from "react-icons/pi";
+import { MdLibraryAdd } from "react-icons/md";
 
 function Teachers() {
-
   const subColumns = [
-    { header: 'Teacher Name', field: 'teacher_name' },
-    { header: 'Subject Name', field: 'sub_code' },
-    
+    { header: "Teacher Name", field: "teacher_name" },
+    { header: "Subject Name", field: "sub_name" },
   ];
 
   const subData = [
-    { teacher_name: 'Sheetal Nirve', sub_code: 'FDS', sessions: '71' },
-    { teacher_name: 'Satish Yedage', sub_code: 'SPOS', sessions: '72' },
-    { teacher_name: 'Geetanjali Bansod', sub_code: 'Computer Graphics', sessions: '73' },
-    { teacher_name: 'Sheetal Nirve', sub_code: 'FDS', sessions: '71' },
-    { teacher_name: 'Satish Yedage', sub_code: 'SPOS', sessions: '72' },
-    { teacher_name: 'Geetanjali Bansod', sub_code: 'Computer Graphics', sessions: '73' },
-    { teacher_name: 'Sheetal Nirve', sub_code: 'FDS', sessions: '71' },
-    { teacher_name: 'Satish Yedage', sub_code: 'SPOS', sessions: '72' },
-    { teacher_name: 'Geetanjali Bansod', sub_code: 'Computer Graphics', sessions: '73' },
+    { teacher_name: "Sheetal Nirve", sub_name: "FDS", sessions: "71" },
+    { teacher_name: "Satish Yedage", sub_name: "SPOS", sessions: "72" },
   ];
 
+  const subToken = [{ header: "Available Tokens", field: "token" }];
 
+  const subDataToken = [{ token: "1234" }];
 
   const [token, setToken] = useState("");
   const [tokenPopup, setTokenPopup] = useState(false);
   const [customTokenPopup, setCustomTokenPopup] = useState(false);
+  const [availTokenPopup, setAvailTokenPopup] = useState(false);
+  const [customToken, setCustomToken] = useState("");
+  const [availTokenData,setAvailTokenData] = useState([])
+  const [teachersData,setTeachersData] = useState([])
+
   const TokenFetcher = (token) => {
     setToken(token);
+    TokenFetcherHandler(token);
     console.log(token);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/admin/avail-tokens");
+        setAvailTokenData(response.data)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+
+  }, [availTokenPopup]);
+
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/admin/get-teachers");
+        // console.log(response.data);
+        const transformedData = response.data.map(item => {
+          return {
+            ...item, // Copy all original properties
+            teacher_name: `${item.first_name} ${item.last_name}`, // Combine first_name and last_name
+          };
+        });
+
+        setTeachersData(transformedData);
+        
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+    
+  },[])
+
+
+  const customTokenHandler = () => {
+    // setToken(customToken);
+    TokenFetcherHandler(customToken);
+  };
+
+  const TokenFetcherHandler = async (token) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/admin/insert-token",
+        { token }
+      );
+      console.log(response.data);
+      if (response.data.Inserted) {
+        setTokenPopup(false);
+        setCustomTokenPopup(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
+      <div
+        className={`${
+          !availTokenPopup && "hidden"
+        } availableTokensPopup w-full h-[80vh] mx-auto flex justify-center items-center z-10 absolute`}
+      >
+        <div className="w-1/3 flex flex-col bg-green-200 px-5 py-5 shadow-2xl rounded-lg">
+          <div
+            onClick={() => setAvailTokenPopup(false)}
+            className="close flex justify-center items-center bg-white rounded-full h-9 w-9 self-end mr-5 mb-5"
+          >
+            <IoMdClose className="text-2xl" />
+          </div>
+          <TableToken columns={subToken} data={availTokenData} />
+        </div>
+      </div>
       <div
         className={`${
           !customTokenPopup && "hidden"
@@ -60,15 +137,21 @@ function Teachers() {
             type="text"
             placeholder="Enter Token"
             className="px-4 py-3 w-[80%] mx-auto outline-none rounded-xl font-semibold text-xl"
+            onChange={(e) => setCustomToken(e.target.value)}
           />
-          <button className="bg-purple-950 px-5 py-3 text-white font-semibold rounded-xl w-[40%] mx-auto text-2xl">
+          <button
+            className="bg-purple-950 px-5 py-3 text-white font-semibold rounded-xl w-[40%] mx-auto text-2xl"
+            onClick={customTokenHandler}
+          >
             Insert
           </button>
         </div>
       </div>
 
       <div
-        className={`absolute mx-auto top-[180px] ${!tokenPopup && "hidden"} z-10`}
+        className={`absolute mx-auto top-[180px] ${
+          !tokenPopup && "hidden"
+        } z-10`}
       >
         <RandomString
           title={"Token for Teacher"}
@@ -87,7 +170,7 @@ function Teachers() {
             >
               <span className="text-2xl bg-red-400 text-white rounded-2xl p-1">
                 <RiAiGenerate />
-              </span>{" "}
+              </span>
               Generate Token
             </button>
             <button
@@ -96,22 +179,33 @@ function Teachers() {
             >
               <span className="text-2xl bg-blue-400 text-white rounded-2xl p-1">
                 <TbLetterSpacing />
-              </span>{" "}
+              </span>
               Custom Token
             </button>
           </div>
-          <button className="availableTokens bg-green-300 px-7 py-3 rounded-xl font-black text-lg shadow-md flex justify-center items-center gap-4">
+          <button
+            className="availableTokens bg-yellow-300 px-7 py-3 rounded-xl font-black text-lg shadow-md flex justify-center items-center gap-4"
+            
+          >
+            <span className="text-xl bg-yellow-400 text-white rounded-2xl p-[5px]">
+            <MdLibraryAdd />
+            </span>
+            Assign Subject <PiArrowFatLinesRightFill /> Teacher
+          </button>
+          <button
+            className="availableTokens bg-green-300 px-7 py-3 rounded-xl font-black text-lg shadow-md flex justify-center items-center gap-4"
+            onClick={() => setAvailTokenPopup(true)}
+          >
             <span className="text-xl bg-green-400 text-white rounded-2xl p-[5px]">
               <FaKey />
-            </span>{" "}
+            </span>
             Available Tokens
           </button>
         </div>
-        <div className="absolute top-[350px] w-[71vw] mx-auto flex justify-center items-center" >
-        <Table columns={subColumns} data={subData} />
+        <div className="absolute top-[350px] w-[71vw] mx-auto flex justify-center items-center">
+          <Table columns={subColumns} data={teachersData} />
         </div>
       </div>
-      
     </>
   );
 }

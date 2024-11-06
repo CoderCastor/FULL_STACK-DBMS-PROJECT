@@ -5,6 +5,7 @@ import { IoMdClose } from "react-icons/io";
 import Table from "../../components/Table";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
+import DeletePopup from "../../components/DeletePopup";
 
 function Subjects() {
   const [popup, setPopup] = useState(false);
@@ -101,8 +102,13 @@ function Subjects() {
     
   }
 
+  const deletion =(bool)=>{
+    
+  }
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-10">
+      {/* <DeletePopup deletion={deletion}/> */}
       <div
         className={`popupAddClass h-[400px] w-[600px] bg-zinc-200 absolute top-[200px] px-4 py-8 ${
           !popup && "hidden"
