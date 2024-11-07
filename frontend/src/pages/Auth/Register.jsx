@@ -42,8 +42,10 @@ function Register() {
       [name]: value,
     }));
     setTokenValid(true)
+    
   };
-
+  
+  
   //check if username exists
   useEffect(() => {
     if (formData.username) {
@@ -94,6 +96,8 @@ function Register() {
       setAllInputs(true);
       if (!emailExists && !usernameExists) {
         //after successfull validation sending request
+        console.log("working");
+        
         switch (UserState.user) {
           case "admin":
             submitHandler();
@@ -107,6 +111,24 @@ function Register() {
                 })
                 .then((res) => {
                   setTokenValid(res.data.exists);
+                  if(res.data.exists){
+                    submitHandler();                   
+                  }
+                })
+                .catch((err) => console.error(err));
+            }
+            break;
+
+            case "student":
+            if (formData.token) {
+              axios
+                .get(`http://localhost:8000/register/check-tokenstd`, {
+                  params: { token: formData.token, role: formData.role },
+                })
+                .then((res) => {
+                  setTokenValid(res.data.exists);
+                  console.log(res.data);
+                  
                   if(res.data.exists){
                     submitHandler();                   
                   }
@@ -152,6 +174,21 @@ function Register() {
           console.log(err);
         }
         break
+
+        case 'student':
+          try {
+            console.log(formData);
+            const response = await axios.post(
+              "http://localhost:8000/register/new-student",
+              formData
+            );
+            console.log(response.data);
+            setShowLoading(true);
+            loginNavigator();
+          } catch (err) {
+            console.log(err);
+          }
+          break
         
     }
   };
@@ -295,14 +332,21 @@ function Register() {
 
             case "student":
               return (
+                <div className="w-[96%] lg:w-4/5 relative">
                 <input
                   className="px-2 py-2 rounded-md w-[96%] lg:w-4/5 bg-transparent border-blue-500 border-b-2 placeholder:text-black focus:outline-none caret-blue-500"
                   type="text"
-                  name="STD ID"
-                  placeholder="student_id"
+                  name="token"
+                  placeholder="Student Token"
                   onChange={changeHandler}
                   required
                 />
+                <span
+                    className={`text-sm font-black text-red-500 absolute left-2 -bottom-6 ${tokenValid && "hidden"}`}
+                  >
+                    Invalid Token !
+                  </span>
+                </div>
               );
           }
         })()}

@@ -85,7 +85,7 @@ function Teachers() {
     try {
       const response = await axios.post(
         "http://localhost:8000/admin/insert-token",
-        { token }
+        { token, }
       );
       console.log(response.data);
       if (response.data.Inserted) {

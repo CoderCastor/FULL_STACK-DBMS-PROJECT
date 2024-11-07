@@ -66,9 +66,26 @@ function Login() {
             setWrongPassword(true);
           }
           if(response.data.isCorrect){
+            UserState.setUserInfo(response.data.result[0])
             setLoading(true);
             setTimeout(()=>{
-              console.log(response.data);
+              switch (UserState.user) {
+                case "admin":
+                  console.log(response.data.result[0]);
+                  break;
+
+                  case "teacher":
+                  console.log(response.data.result[0]);
+                  break;
+              
+                  case "student":
+                    console.log("Im Student");
+                    console.log(response.data.result[0]);
+                    break;    
+
+                default:
+                  break;
+              }
               
               navigate('/admin/dashboard/home')
               
